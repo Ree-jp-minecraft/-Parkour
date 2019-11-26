@@ -49,6 +49,26 @@ class main extends PluginBase implements Listener
         $this->getScheduler()->cancelTask($this->task[$p->getName()]);
     }
 
+public function onBreak(BlockBreakEvent $ev)
+{
+$bl $ev->getBlock();
+if ($bl->getId() == Item::END_PORTAL_FRAME)
+        {
+            $level = $p->getLevel()->getName();
+            if ($this->data->exists($level))
+            {
+                $arraydata = $this->data->get($level);
+                foreach ($arraydata as $data)
+                {
+                    if ($data["x"] == $p->getFloorX() and $data["y"] == $p->getFloorY() and $data["z"] == $p->getFloorZ())
+                    ｛
+//aaaaaaa
+                    }
+                }
+            }
+        }
+}
+
     public function onPlace(BlockPlaceEvent $ev)
     {
         $p = $ev->getPlayer();

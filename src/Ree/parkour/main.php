@@ -78,7 +78,7 @@ class main extends PluginBase implements Listener
         $arraydata[] = $array;
         $this->data->set($level ,$arraydata);
         $this->data->save();
-        $p->sendMessage("§aReef§eNetwork§r>>成功しました");
+        $p->sendMessage("§a>>成功しました");
     }
 
     /**
@@ -100,10 +100,10 @@ class main extends PluginBase implements Listener
             $array["id"] = $id;
             $array["point"] = $point;
             $this->point[$n] = $array;
-            $p->sendMessage("§aReef§eNetwork§r>>パルクールスタート");
+            $p->sendMessage("§a>>§rパルクールスタート");
             if ($bool)
             {
-                $p->sendMessage("§aReef§eNetwork§r>>パルクール終了\n§2コース : ".$id."\n§6タイム : ".$this->time[$n]);
+                $p->sendMessage("§a>>§rパルクール終了\n§2コース : ".$id."\n§6タイム : ".$this->time[$n]);
                 unset($this->point[$n]);
                 $this->time[$n] = false;
             }
@@ -116,12 +116,12 @@ class main extends PluginBase implements Listener
                 {
                     if ($bool)
                     {
-                        $p->sendMessage("§aReef§eNetwork§r>>パルクール終了\n§2コース : ".$id."\n§6タイム : ".$this->time[$n]);
+                        $p->sendMessage("§a>>§rパルクール終了\n§2コース : ".$id."\n§6タイム : ".$this->time[$n]);
                         unset($this->point[$n]);
                         $this->time[$n] = false;
                         return;
                     }
-                    $p->sendMessage("§aReef§eNetwork§r>>チェックポイント".$point."を通過しました\n§6タイム : ".$this->time[$n]);
+                    $p->sendMessage("§a>>§rチェックポイント".$point."を通過しました\n§6タイム : ".$this->time[$n]);
                     $this->point[$n] = $array;
                 }
             }

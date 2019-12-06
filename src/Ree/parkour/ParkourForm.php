@@ -34,7 +34,7 @@ class ParkourForm implements Form
                 [
                     "type" => "input",
                     "text" => "ParkourId",
-                    "placeholder" => "int",
+                    "placeholder" => "string",
                     "default" => ""
                 ],
                 [
@@ -58,12 +58,12 @@ class ParkourForm implements Form
         if ($data === null) {
             return;
         }
-        if (!ctype_digit(strval($data[0])))
+        if (!is_string($data[0]))
         {
             $p->sendMessage("§cParkourIdが不正な値です");
             return;;
         }
-        if (!ctype_digit(strval($data[1])))
+        if (!is_string($data[1]))
         {
             $p->sendMessage("§cCheckpointが不正な値です");
             return;

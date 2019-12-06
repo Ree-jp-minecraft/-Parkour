@@ -2,6 +2,8 @@
 
 namespace Ree\parkour;
 
+use pocketmine\block\Block;
+use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerQuitEvent;
@@ -29,6 +31,7 @@ class main extends PluginBase implements Listener
      * @var array[]
      */
     private $point;
+
     public function onEnable()
     {
         $this->getLogger()->info("loading now...");
@@ -40,7 +43,7 @@ class main extends PluginBase implements Listener
     {
         $p = $ev->getPlayer();
         $this->time[$p->getName()] = false;
-        $this->task[$p->getName()] = $this->getScheduler()->scheduleRepeatingTask(new ParkourCheckTask($p ,$this) ,2)->getTaskId();
+        $this->task[$p->getName()] = $this->getScheduler()->scheduleRepeatingTask(new ParkourCheckTask($p, $this), 2)->getTaskId();
     }
 
     public function onQuit(PlayerQuitEvent $ev)
@@ -49,32 +52,34 @@ class main extends PluginBase implements Listener
         $this->getScheduler()->cancelTask($this->task[$p->getName()]);
     }
 
-public function onBreak(BlockBreakEvent $ev)
-{
-$bl $ev->getBlock();
-if ($bl->getId() == Item::END_PORTAL_FRAME)
-        {
+    public function onBreak(BlockBreakEvent $ev)
+    {
+        $p = $ev->getPlayer();
+        $bl = $ev->getBlock();
+        if ($bl->getId() == Block::END_PORTAL_FRAME) {
             $level = $p->getLevel()->getName();
-            if ($this->data->exists($level))
-            {
+            if ($this->data->exists($level)) {
                 $arraydata = $this->data->get($level);
-                foreach ($arraydata as $data)
-                {
-                    if ($data["x"] == $p->getFloorX() and $data["y"] == $p->getFloorY() and $data["z"] == $p->getFloorZ())
-                    ｛
-//aaaaaaa
+                $i = 0;
+                foreach ($arraydata as $data) {
+                    if ($data["x"] == $bl->getFloorX() and $data["y"] == $bl->getFloorY() and $data["z"] == $bl->getFloorZ()) {
+                        unset($arraydata[$i]);
+                        $this->data->set($level, $arraydata);
+                        $this->data->save();
+                        $p->sendMessage("コース:" . $data["id"] . "ポイント:" . $data["point"] . "を破壊しました");
                     }
+                    $i++;
                 }
             }
         }
-}
+    }
 
-    public function onPlace(BlockPlaceEvent $ev)
+    public
+    function onPlace(BlockPlaceEvent $ev)
     {
         $p = $ev->getPlayer();
-        if ($ev->getBlock()->getId() == Item::END_PORTAL_FRAME)
-        {
-            $p->sendForm(new ParkourForm($this ,$ev->getBlock()));
+        if ($ev->getBlock()->getId() == Item::END_PORTAL_FRAME) {
+            $p->sendForm(new ParkourForm($this, $ev->getBlock()));
         }
     }
 
@@ -82,7 +87,8 @@ if ($bl->getId() == Item::END_PORTAL_FRAME)
      * @param array $data
      * @param Player $p
      */
-    public function setPoint(array $data ,Player $p ,int $x ,int $y ,int $z): void
+    public
+    function setPoint(array $data, Player $p, int $x, int $y, int $z): void
     {
         $level = $p->getLevel()->getName();
         $array["x"] = $x;
@@ -91,29 +97,27 @@ if ($bl->getId() == Item::END_PORTAL_FRAME)
         $array["id"] = $data[0];
         $array["point"] = $data[1];
         $array["goal"] = $data[2];
-        if ($this->data->exists($level))
-        {
+        if ($this->data->exists($level)) {
             $arraydata = $this->data->get($level);
         }
         $arraydata[] = $array;
-        $this->data->set($level ,$arraydata);
+        $this->data->set($level, $arraydata);
         $this->data->save();
         $p->sendMessage("§a>>成功しました");
     }
 
     /**
      * @param Player $p
-     * @param int $id
+     * @param string $id
      * @param int $point
      * @param bool $bool
      */
-    public function checkPoint(Player $p ,int $id ,int $point ,bool $bool)
+    public
+    function checkPoint(Player $p, string $id, int $point, bool $bool)
     {
         $n = $p->getName();
-        if (!isset($this->point[$n]))
-        {
-            if ($point != 0)
-            {
+        if (!isset($this->point[$n])) {
+            if ($point != 0) {
                 return;
             }
             $this->time[$n] = 0.1;
@@ -121,27 +125,23 @@ if ($bl->getId() == Item::END_PORTAL_FRAME)
             $array["point"] = $point;
             $this->point[$n] = $array;
             $p->sendMessage("§a>>§rパルクールスタート");
-            if ($bool)
-            {
-                $p->sendMessage("§a>>§rパルクール終了\n§2コース : ".$id."\n§6タイム : ".$this->time[$n]);
+            if ($bool) {
+                $p->sendMessage("§a>>§rパルクール終了\n§2コース : " . $id . "\n§6タイム : " . $this->time[$n]);
                 unset($this->point[$n]);
                 $this->time[$n] = false;
             }
-        }else{
+        } else {
             $array = $this->point[$n];
-            if ($array["id"] == $id)
-            {
+            if ($array["id"] == $id) {
                 $array["point"]++;
-                if ($array["point"] == $point)
-                {
-                    if ($bool)
-                    {
-                        $p->sendMessage("§a>>§rパルクール終了\n§2コース : ".$id."\n§6タイム : ".$this->time[$n]);
+                if ($array["point"] == $point) {
+                    if ($bool) {
+                        $p->sendMessage("§a>>§rパルクール終了\n§2コース : " . $id . "\n§6タイム : " . $this->time[$n]);
                         unset($this->point[$n]);
                         $this->time[$n] = false;
                         return;
                     }
-                    $p->sendMessage("§a>>§rチェックポイント".$point."を通過しました\n§6タイム : ".$this->time[$n]);
+                    $p->sendMessage("§a>>§rチェックポイント" . $point . "を通過しました\n§6タイム : " . $this->time[$n]);
                     $this->point[$n] = $array;
                 }
             }

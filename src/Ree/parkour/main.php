@@ -108,12 +108,12 @@ class main extends PluginBase implements Listener
 
     /**
      * @param Player $p
-     * @param int $id
+     * @param string $id
      * @param int $point
      * @param bool $bool
      */
     public
-    function checkPoint(Player $p, int $id, int $point, bool $bool)
+    function checkPoint(Player $p, string $id, int $point, bool $bool)
     {
         $n = $p->getName();
         if (!isset($this->point[$n])) {
